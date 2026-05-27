@@ -1,0 +1,59 @@
+ClassId,Name
+0,Speed limit (5km/h)
+1,Speed limit (15km/h)
+2,Speed limit (30km/h)
+3,Speed limit (40km/h)
+4,Speed limit (50km/h)
+5,Speed limit (60km/h)
+6,Speed limit (70km/h)
+7,Speed limit (80km/h)
+8,Dont Go Straight Or Left
+9,Dont Go Straight Or Right
+10,Dont Go Straight
+11,Dont Go Left
+12,Dont Go Left Or Right
+13,Dont Go Right
+14,Dont Overtake From Left
+15,No Uturn
+16,No Car
+17,No Horn
+18,Speed limit (40km/h)
+19,Speed limit (50km/h)
+20,Go Straight Or Right
+21,Go Straight
+22,Go Left
+23,Go Left Or Right
+24,Go Right
+25,Keep Left
+26,Keep Right
+27,Roundabout Mandatory
+28,Watch Out For Cars
+29,Horn
+30,Bicycles Crossing
+31,Uturn
+32,Road Divider
+33,Traffic Signals
+34,Danger Ahead
+35,Zebra Crossing
+36,Bicycles Crossing
+37,Children Crossing
+38,Dangerous Curve To The Left
+39,Dangerous Curve To The Right
+40,Steep Descent
+41,Steep Ascent
+42,Slow Down
+43,Go Right Or Straight
+44,Go Left Or Straight
+45,Residential Area
+46,Zigzag Curve
+47,Train Crossing
+48,Under Construction
+49,Winding Road
+50,Fences
+51,Heavy Vehicle Accidents
+52,No Pass Without Stop
+53,Give Way
+54,No Stopping
+55,No Entry
+56,Give Way (Road Sign)
+57,Inspection Point

@@ -1,0 +1,9 @@
+numpy  # Числові операції та масиви
+pandas  # Таблиці та аналіз даних
+opencv-python  # Обробка зображень
+scikit-learn  # Алгоритми машинного навчання
+joblib  # Збереження моделей на диск
+pillow  # Робота з зображеннями
+fastapi  # Веб-фреймворк для API
+uvicorn[standard]  # Веб-сервер для FastAPI
+python-multipart  # Обробка завантажень файлів
