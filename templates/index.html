@@ -1,0 +1,281 @@
+<!DOCTYPE html> <!-- HTML5 документ -->
+<html lang="ua"> <!-- Мова сторінки -->
+<head>
+    <meta charset="UTF-8"> <!-- Кодування символів -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Відповідальність за мобільний перегляд -->
+    <title>Розпізнавання дорожніх знаків</title> <!-- Назва вікна -->
+    <link rel="stylesheet" href="/static/style.css"> <!-- Підключення стилів -->
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg"> <!-- Іконка сайту -->
+</head>
+<body>
+<div class="glow-top"></div> <!-- Декоративний ефект зверху -->
+
+<main class="page">
+
+    <header class="site-header"> <!-- Верхній заголовок -->
+        <h1>Розпізнавання<br><em>Дорожніх знаків</em></h1> <!-- Головний заголовок -->
+        <p class="sub">Ансамбль HOG + Pixels &nbsp;·&nbsp; LogisticRegression + KNN &nbsp;·&nbsp; FastAPI</p> <!-- Опис моделі -->
+    </header>
+
+    <div class="card">
+
+        <!-- ЗОНА: клік на знак або drag & drop -->
+        <div class="upload-zone" id="upload-zone"> <!-- Зона завантаження зображення -->
+            <input id="file-input" type="file" accept=".jpg,.jpeg,.png,.bmp" style="display:none"> <!-- Схований input-файл -->
+            <div class="upload-icon-wrap" id="upload-trigger" style="cursor:pointer" title="Натисніть для вибору файлу"> <!-- Тригер вибору файлу -->
+                <span class="upload-sign">🛑</span> <!-- Іконка-знак -->
+                <span class="upload-ring"></span> <!-- Анімаційне кільце -->
+            </div>
+            <p class="upload-title"> <!-- Підказка для користувача -->
+                <span style="color:var(--neon);cursor:pointer" id="upload-trigger-text">Натисніть на знак</span> <!-- Клік для вибору -->
+                або перетягніть фото сюди <!-- Альтернативний спосіб -->
+            </p>
+            <p class="upload-hint">jpg &nbsp;·&nbsp; jpeg &nbsp;·&nbsp; png &nbsp;·&nbsp; bmp</p> <!-- Дозволені формати -->
+        </div>
+
+        <!-- КНОПКА ТЕСТУ -->
+        <div class="test-button-wrap"> <!-- Обгортувач для кнопки тесту -->
+            <button id="test-button" class="btn-test"> <!-- Кнопка автотесту -->
+                ⚡&nbsp;&nbsp;Автотест
+            </button>
+        </div>
+
+        <!-- СТАТУС -->
+        <div class="status-bar" id="status"> <!-- Рядок статусу -->
+            <span class="prompt">›</span> <!-- Значок запиту -->
+            <span id="status-text">Очікування зображення...</span> <!-- Текст статусу -->
+            <span class="cursor"></span> <!-- Мерехтливий курсор -->
+        </div>
+
+        <!-- ПРЕВ'Ю -->
+        <div class="preview-wrap" id="preview-wrap"> <!-- Область прев'ю -->
+            <div class="scan-line"></div> <!-- Лінія сканування -->
+            <img id="preview" class="preview" alt="Зображення знака"> <!-- Елемент для попереднього перегляду -->
+        </div>
+
+        <!-- РЕЗУЛЬТАТ -->
+        <div id="result" class="result hidden"> <!-- Блок з результатом (спочатку схований) -->
+
+            <div class="section-label">Результат аналізу</div>
+
+            <div class="result-hero"> <!-- Головна панель результату -->
+                <div class="result-sign-name" id="label">—</div> <!-- Ім'я передбаченого класу -->
+                <div class="conf-row"> <!-- Рядок для показника впевненості -->
+                    <span class="conf-number" id="confidence">—</span> <!-- Числова впевненість -->
+                    <span class="conf-badge" id="conf-badge">—</span> <!-- Текстовий бейдж -->
+                </div>
+                <div class="conf-track"> <!-- Візуальна шкала впевненості -->
+                    <div class="conf-fill" id="conf-fill" style="width:0%"></div> <!-- Заповнювана смужка -->
+                </div>
+                <div class="etalon-row"> <!-- Рядок з еталонною міткою -->
+                    <span class="etalon-tag">Еталон</span> <!-- Позначка 'Еталон' -->
+                    <span class="etalon-val" id="true-label">—</span> <!-- Строка з реальною міткою -->
+                </div>
+            </div>
+
+            <div class="section-label">Голосування моделей</div>
+            <div class="models-grid"> <!-- Сітка результатів моделей -->
+                <div class="model-tile"> <!-- Плитка для першої моделі -->
+                    <div class="model-tag">HOG + LogisticRegression</div> <!-- Назва моделі -->
+                    <div class="model-result" id="hog-vote">—</div> <!-- Вибір моделі -->
+                    <div class="model-pct" id="hog-conf">—</div> <!-- Її впевненість -->
+                </div>
+                <div class="model-tile"> <!-- Плитка для другої моделі -->
+                    <div class="model-tag">Pixels + PCA + KNN</div> <!-- Назва моделі -->
+                    <div class="model-result" id="pixel-vote">—</div> <!-- Вибір моделі -->
+                    <div class="model-pct" id="pixel-conf">—</div> <!-- Її впевненість -->
+                </div>
+            </div>
+
+            <div class="section-label">Найкращі варіанти</div>
+            <div id="top-candidates" class="top-candidates"></div> <!-- Контейнер кращих кандидатів -->
+
+            <div class="rec-box"> <!-- Блок з рекомендацією водію -->
+                <span class="rec-tag">Рекомендація</span> <!-- Заголовок -->
+                <span id="recommendation">—</span> <!-- Текст рекомендації -->
+            </div>
+
+            <div id="next-wrap" class="next-wrap hidden">
+                <button id="next-button" class="btn-next">Наступне зображення &nbsp;→</button> <!-- Кнопка наступного тесту -->
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ФУТЕР -->
+    <footer class="site-footer"> <!-- Нижній колонтитул -->
+        <span class="footer-line"></span> <!-- Декоративна лінія -->
+        <span class="footer-text">Курсова робота &nbsp;·&nbsp; <strong>Аверкіна Маргарита</strong></span> <!-- Автор -->
+        <span class="footer-line"></span> <!-- Декоративна лінія -->
+    </footer>
+
+</main>
+
+<script>
+    // Допоміжні утиліти та обробники подій
+    const fileInput   = document.getElementById("file-input"); // посилання на input-файл
+    const uploadZone  = document.getElementById("upload-zone"); // зона drag&drop
+    const uploadTrigger = document.getElementById("upload-trigger"); // тригер кліку
+    const uploadTriggerText = document.getElementById("upload-trigger-text"); // текстовий тригер
+    const statusText  = document.getElementById("status-text"); // елемент тексту статусу
+    const statusBar   = document.getElementById("status"); // контейнер статусу
+    const resultBox   = document.getElementById("result"); // блок результату
+    const preview     = document.getElementById("preview"); // елемент зображення прев'ю
+    const previewWrap = document.getElementById("preview-wrap"); // обгортка прев'ю
+    const testButton  = document.getElementById("test-button"); // кнопка автотест
+    const nextButton  = document.getElementById("next-button"); // кнопка 'наступне'
+    const nextWrap    = document.getElementById("next-wrap"); // обгортка кнопки 'наступне'
+    let currentIdx    = null; // індекс поточного тестового зразка
+
+    // Клік на знак або текст відкриває діалог вибору файлу
+    uploadTrigger.addEventListener("click", () => fileInput.click()); // обробник кліку
+    uploadTriggerText.addEventListener("click", () => fileInput.click()); // також для тексту
+
+    // Повертає відсоткове представлення числа
+    function pct(v) { return `${(v * 100).toFixed(1)}%`; } // форматування у відсотки
+
+    // Оновлює рядок стану (повідомлення та індикатор)
+    function setStatus(msg, active = false) {
+        statusText.textContent = msg; // змінюємо текст
+        statusBar.classList.toggle("active", active); // вмикаємо/вимикаємо індикатор
+    }
+
+    // Скидає навігацію тестових зразків
+    function resetNav() {
+        currentIdx = null; // скидаємо індекс
+        nextWrap.classList.add("hidden"); // ховаємо кнопку
+    }
+
+    // Встановлює текстове позначення рівня впевненості
+    function setBadge(conf) {
+        const b = document.getElementById("conf-badge"); // елемент бейджу
+        if (conf >= 0.8) {
+            b.textContent = "Висока";  b.className = "conf-badge high"; // висока
+        } else if (conf >= 0.55) {
+            b.textContent = "Середня"; b.className = "conf-badge medium"; // середня
+        } else {
+            b.textContent = "Низька";  b.className = "conf-badge low"; // низька
+        }
+    }
+
+    // Відображає список кращих варіантів з іконками та смужками
+    function renderCandidates(list) {
+        const medals = ["🥇","🥈","🥉"]; // медалі для топ-3
+        return list.map((item, i) => {
+            const w = Math.round(item.probability * 100); // відсоток
+            return `<div class="cand-row">
+                <span class="cand-medal">${medals[i]}</span>
+                <span class="cand-name">${item.label_ua}</span>
+                <span class="cand-pct">${pct(item.probability)}</span>
+                <div class="cand-track"><div class="cand-fill" style="width:${w}%"></div></div>
+            </div>`; // HTML рядок кандидата
+        }).join(""); // повертаємо злитий HTML
+    }
+
+    // Заповнює блок результату отриманими даними
+    function renderResult(data) {
+        document.getElementById("label").textContent          = data.predicted_class_ua; // назва передбачення
+        document.getElementById("true-label").textContent     = data.true_label_ua || "Невідомо"; // еталон
+        document.getElementById("confidence").textContent     = pct(data.confidence); // число впевненості
+        document.getElementById("conf-fill").style.width      = pct(data.confidence); // ширина шкали
+        setBadge(data.confidence); // оновлюємо бейдж
+        document.getElementById("hog-vote").textContent       = data.model_votes_ua.hog; // голос HOG
+        document.getElementById("hog-conf").textContent       = pct(data.model_confidence.hog); // впевненість HOG
+        document.getElementById("pixel-vote").textContent     = data.model_votes_ua.pixel; // голос Pixel
+        document.getElementById("pixel-conf").textContent     = pct(data.model_confidence.pixel); // впевненість Pixel
+        document.getElementById("top-candidates").innerHTML   = renderCandidates(data.top_candidates_ua); // топ-кандидати
+        document.getElementById("recommendation").textContent = data.recommendation; // рекомендація
+
+        if (data.image_url) preview.src = data.image_url; // показати URL зображення
+        preview.style.display = "block"; // показати прев'ю
+        previewWrap.classList.remove("scanning"); // зупинити ефект сканування
+
+        if (typeof data.sample_index === "number") {
+            currentIdx = data.sample_index; // зберігаємо індекс
+            nextWrap.classList.remove("hidden"); // показуємо кнопку 'наступне'
+        } else {
+            resetNav(); // скидаємо навігацію
+        }
+
+        resultBox.classList.remove("hidden"); // показуємо блок результату
+    }
+
+    // Надсилає файл на сервер для аналізу і показує результат
+    async function analyzeFile(file) {
+        preview.src = URL.createObjectURL(file); // тимчасовий URL для прев'ю
+        preview.style.display = "block"; // показуємо прев'ю
+        previewWrap.classList.add("scanning"); // вмикаємо ефект сканування
+        resetNav(); // скидаємо навігацію
+        resultBox.classList.add("hidden"); // ховаємо попередній результат
+        setStatus("Аналіз зображення...", true); // ставимо статус
+
+        const fd = new FormData(); // форм-дата для відправки
+        fd.append("file", file); // додаємо файл
+        try {
+            const r = await fetch("/api/predict", { method: "POST", body: fd }); // POST на /api/predict
+            const d = await r.json(); // читаємо JSON
+            if (!r.ok) throw new Error(d.detail || "Помилка сервера"); // обробка помилки
+            renderResult(d); // виводимо результат
+            setStatus("Аналіз завершено."); // оновлюємо статус
+        } catch (e) {
+            previewWrap.classList.remove("scanning"); // зупиняємо скан
+            setStatus("Помилка: " + e.message); // показуємо помилку
+        }
+    }
+
+    // Обробка вибору файлу через діалог
+    fileInput.addEventListener("change", () => {
+        if (fileInput.files[0]) analyzeFile(fileInput.files[0]); // аналізуємо вибраний файл
+    });
+
+    // Drag & drop обробники
+    uploadZone.addEventListener("dragover", e => {
+        e.preventDefault(); // дозволяємо drop
+        uploadZone.classList.add("drag-over"); // візуальний стан
+    });
+    uploadZone.addEventListener("dragleave", () => {
+        uploadZone.classList.remove("drag-over"); // знімаємо стан
+    });
+    uploadZone.addEventListener("drop", e => {
+        e.preventDefault(); // відміняємо стандартну поведінку
+        uploadZone.classList.remove("drag-over"); // знімаємо стан
+        const file = e.dataTransfer.files[0]; // перший файл
+        if (file) analyzeFile(file); // аналізуємо файл
+    });
+
+    // Кнопка автотесту — завантажує випадковий тестовий зразок
+    testButton.addEventListener("click", async () => {
+        setStatus("Завантаження тестового зображення...", true); // ставимо статус
+        resultBox.classList.add("hidden"); // ховаємо результат
+        previewWrap.classList.add("scanning"); // вмикаємо сканування
+        try {
+            const r = await fetch("/api/test/random"); // запит випадкового зразка
+            const d = await r.json(); // читаємо відповідь
+            if (!r.ok) throw new Error(d.detail || "Помилка сервера"); // перевірка статусу
+            renderResult(d); // показуємо результат
+            setStatus("Тестове зображення оброблено."); // оновлюємо статус
+        } catch (e) {
+            previewWrap.classList.remove("scanning"); // зупиняємо скан
+            setStatus("Помилка: " + e.message); // показ помилки
+        }
+    });
+
+    // Кнопка 'Наступне' — запит наступного зразка за індексом
+    nextButton.addEventListener("click", async () => {
+        if (currentIdx === null) return; // якщо немає індексу — вихід
+        setStatus("Завантаження наступного зображення...", true); // ставимо статус
+        previewWrap.classList.add("scanning"); // вмикаємо ефект
+        try {
+            const r = await fetch(`/api/test/next/${currentIdx}`); // запит наступного
+            const d = await r.json(); // парсимо JSON
+            if (!r.ok) throw new Error(d.detail || "Помилка сервера"); // перевірка
+            renderResult(d); // показуємо результат
+            setStatus("Показано наступне зображення."); // оновлюємо статус
+        } catch (e) {
+            previewWrap.classList.remove("scanning"); // зупиняємо ефект
+            setStatus("Помилка: " + e.message); // показ помилки
+        }
+    });
+</script>
+</body>
+</html>
