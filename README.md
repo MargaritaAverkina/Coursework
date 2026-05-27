@@ -74,13 +74,13 @@ project/
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
-Повне навчання моделей (рекомендовано, займає 10–30 хв):
+Повне навчання моделей:
 
 ```powershell
 .\.venv\Scripts\python.exe train_models.py --dataset dataset
 ```
 
-Швидке навчання для демонстрації (займає 1–3 хв, точність нижча):
+Швидке навчання для демонстрації:
 
 ```powershell
 .\.venv\Scripts\python.exe train_models.py --dataset dataset --fast
