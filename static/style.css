@@ -1,0 +1,744 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700;800&family=Exo+2:ital,wght@1,300&display=swap');
+
+:root {
+    --asphalt:      #080c0a;
+    --surface:      #0d1410;
+    --panel:        #111a14;
+    --panel-raised: #162019;
+    --input-bg:     #0a0f0c;
+
+    --neon:         #00ff6e;
+    --neon-dim:     rgba(0,255,110,0.15);
+    --neon-glow:    rgba(0,255,110,0.35);
+    --green-mid:    #00c853;
+    --green-muted:  #1a7a40;
+    --green-dark:   #0d3d20;
+
+    --text:         #d4edd9;
+    --text-soft:    #6b9e78;
+    --text-mono:    #00ff6e;
+
+    --border:       rgba(0,255,110,0.1);
+    --border-mid:   rgba(0,255,110,0.2);
+    --border-bright:rgba(0,255,110,0.4);
+
+    --warn:         #ffc107;
+    --danger:       #ff5252;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: 'Exo 2', sans-serif;
+    background: var(--asphalt);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+    cursor: default;
+}
+
+/* Піксельна текстура */
+body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image:
+        radial-gradient(circle, rgba(0,255,110,0.025) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+}
+
+/* Вертикальні маркери */
+body::after {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background:
+        repeating-linear-gradient(
+            180deg,
+            transparent 0px,
+            transparent 60px,
+            rgba(0,255,110,0.025) 60px,
+            rgba(0,255,110,0.025) 62px
+        );
+    pointer-events: none;
+}
+
+/* Зелений ореол зверху */
+.glow-top {
+    position: fixed;
+    top: -200px; left: 50%;
+    transform: translateX(-50%);
+    width: 700px; height: 400px;
+    background: radial-gradient(ellipse, rgba(0,255,110,0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Контейнер */
+.page {
+    position: relative; z-index: 1;
+    width: min(820px, calc(100% - 24px));
+    margin: 0 auto;
+    padding: 52px 0 72px;
+}
+
+/* Головка */
+.site-header {
+    text-align: center;
+    margin-bottom: 44px;
+    animation: fadeDown 0.6s ease both;
+}
+
+@keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.sys-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--neon);
+    background: var(--neon-dim);
+    border: 1px solid var(--border-mid);
+    border-radius: 3px;
+    padding: 5px 14px;
+    margin-bottom: 22px;
+    text-transform: uppercase;
+}
+
+.sys-badge .dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--neon);
+    box-shadow: 0 0 6px var(--neon), 0 0 12px var(--neon);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.3; transform: scale(0.8); }
+}
+
+h1 {
+    font-family: 'Exo 2', sans-serif;
+    font-size: clamp(30px, 6vw, 54px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--text);
+    text-shadow: 0 0 40px rgba(0,255,110,0.12);
+}
+
+h1 em {
+    font-style: normal;
+    color: var(--neon);
+    text-shadow: 0 0 24px var(--neon-glow), 0 0 60px rgba(0,255,110,0.2);
+}
+
+.sub {
+    margin-top: 10px;
+    font-size: 13px;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--text-soft);
+    letter-spacing: 0.08em;
+}
+
+/* Картка */
+.card {
+    background: var(--panel);
+    border: 1px solid var(--border-mid);
+    border-radius: 18px;
+    padding: 36px 40px;
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.5s 0.15s ease both;
+    box-shadow:
+        0 0 0 1px rgba(0,255,110,0.04),
+        0 24px 64px rgba(0,0,0,0.6),
+        inset 0 1px 0 rgba(0,255,110,0.08);
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Неонова головна лінія */
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 10%; right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--neon), transparent);
+    box-shadow: 0 0 12px var(--neon-glow);
+}
+
+/* Кутовий акцент */
+.card::after {
+    content: '';
+    position: absolute;
+    top: 12px; right: 12px;
+    width: 24px; height: 24px;
+    border-top: 1px solid var(--border-bright);
+    border-right: 1px solid var(--border-bright);
+    border-radius: 0 4px 0 0;
+}
+
+/* Область завантаження */
+.upload-zone {
+    position: relative;
+    border: 1px dashed var(--border-mid);
+    border-radius: 12px;
+    padding: 40px 24px;
+    text-align: center;
+    background: var(--input-bg);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    overflow: hidden;
+    margin-bottom: 18px;
+}
+
+.upload-zone::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(0,255,110,0.04), transparent);
+    opacity: 0;
+    transition: opacity 0.25s;
+}
+
+.upload-zone:hover::before,
+.upload-zone.drag-over::before { opacity: 1; }
+
+.upload-zone:hover,
+.upload-zone.drag-over {
+    border-color: var(--border-bright);
+    box-shadow: 0 0 20px rgba(0,255,110,0.08);
+}
+
+#file-input {
+    position: absolute; inset: 0;
+    opacity: 0; cursor: pointer;
+    width: 100%; height: 100%;
+}
+
+.upload-icon-wrap {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 14px;
+}
+
+.upload-sign {
+    font-size: 52px;
+    display: block;
+    filter: drop-shadow(0 0 8px rgba(0,255,110,0.3));
+    transition: transform 0.2s;
+}
+
+.upload-zone:hover .upload-sign { transform: scale(1.08); }
+
+.upload-ring {
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 1px solid var(--border-mid);
+    animation: spin 8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.upload-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+}
+
+.upload-title span { color: var(--neon); }
+
+.upload-hint {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--text-soft);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+}
+
+/* Розділювач */
+.or-divider {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: var(--text-soft);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin: 18px 0;
+}
+
+.or-divider::before,
+.or-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-mid), transparent);
+}
+
+/* Кнопка тесту */
+.btn-test {
+    width: auto;
+    min-width: 220px;
+    padding: 14px;
+    background: transparent;
+    color: var(--neon);
+    font-family: 'Exo 2', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border: 1px solid var(--border-mid);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.22s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-test::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, var(--neon-dim), transparent);
+    opacity: 0;
+    transition: opacity 0.22s;
+}
+
+.btn-test:hover {
+    border-color: var(--border-bright);
+    box-shadow: 0 0 20px rgba(0,255,110,0.12), inset 0 0 20px rgba(0,255,110,0.04);
+    color: #fff;
+}
+
+.btn-test:hover::before { opacity: 1; }
+
+.btn-next {
+    margin-top: 24px;
+    padding: 11px 28px;
+    background: transparent;
+    color: var(--text-soft);
+    font-family: 'Exo 2', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-next:hover {
+    border-color: var(--border-mid);
+    color: var(--neon);
+}
+
+/* Статус-рядок */
+.status-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 16px;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 18px 0;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--text-soft);
+    min-height: 44px;
+    transition: border-color 0.3s;
+}
+
+.status-bar.active {
+    border-color: var(--border-mid);
+    color: var(--neon);
+}
+
+.status-bar .prompt {
+    color: var(--neon);
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.status-bar .cursor {
+    display: inline-block;
+    width: 7px; height: 13px;
+    background: var(--neon);
+    margin-left: 2px;
+    animation: blink-cursor 1s step-end infinite;
+    vertical-align: middle;
+    opacity: 0;
+}
+
+.status-bar.active .cursor { opacity: 1; }
+
+@keyframes blink-cursor {
+    0%,100% { opacity: 1; } 50% { opacity: 0; }
+}
+
+/* Прев'ю зображення */
+.preview-wrap {
+    display: flex;
+    justify-content: center;
+    margin: 22px 0;
+    position: relative;
+}
+
+.preview {
+    width: min(100%, 440px);
+    max-height: 320px;
+    object-fit: contain;
+    border-radius: 12px;
+    border: 1px solid var(--border-mid);
+    background: var(--input-bg);
+    padding: 8px;
+    display: none;
+    box-shadow: 0 0 32px rgba(0,255,110,0.08);
+}
+
+/* Скануюча лінія */
+.scan-line {
+    display: none;
+    position: absolute;
+    left: 50%; transform: translateX(-50%);
+    width: min(100%, 440px);
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, var(--neon) 50%, transparent 100%);
+    box-shadow: 0 0 10px var(--neon);
+    animation: scan 1.2s linear infinite;
+    pointer-events: none;
+    top: 8px;
+}
+
+.preview-wrap.scanning .scan-line { display: block; }
+
+@keyframes scan {
+    0%   { top: 8px;   opacity: 0.8; }
+    90%  { opacity: 0.8; }
+    100% { top: calc(100% - 8px); opacity: 0; }
+}
+
+/* Поле результату */
+.result {
+    margin-top: 32px;
+    animation: fadeUp 0.4s ease both;
+}
+
+.section-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--green-muted);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
+/* Головний блок результату */
+.result-hero {
+    background: linear-gradient(135deg, var(--panel-raised) 0%, var(--green-dark) 100%);
+    border: 1px solid var(--border-mid);
+    border-radius: 14px;
+    padding: 24px 28px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+}
+
+.result-hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--neon), transparent);
+    opacity: 0.6;
+}
+
+.result-sign-name {
+    font-size: clamp(18px, 3vw, 26px);
+    font-weight: 700;
+    color: var(--neon);
+    line-height: 1.25;
+    margin-bottom: 16px;
+    text-shadow: 0 0 20px rgba(0,255,110,0.25);
+}
+
+.conf-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.conf-number {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 28px;
+    font-weight: bold;
+    color: var(--text);
+    line-height: 1;
+}
+
+.conf-badge {
+    font-family: 'Exo 2', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 4px;
+}
+
+.conf-badge.high   { background: rgba(0,255,110,0.15); color: var(--neon);  border: 1px solid rgba(0,255,110,0.3); }
+.conf-badge.medium { background: rgba(255,193,7,0.12);  color: var(--warn);  border: 1px solid rgba(255,193,7,0.25); }
+.conf-badge.low    { background: rgba(255,82,82,0.12);  color: var(--danger);border: 1px solid rgba(255,82,82,0.25); }
+
+.conf-track {
+    height: 3px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+.conf-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green-muted), var(--neon));
+    border-radius: 2px;
+    box-shadow: 0 0 8px var(--neon-glow);
+    transition: width 0.7s cubic-bezier(0.4,0,0.2,1);
+}
+
+.etalon-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    font-size: 13px;
+}
+
+.etalon-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+
+.etalon-val { color: var(--text); }
+
+/* Сітка моделей */
+.models-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.model-tile {
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    transition: border-color 0.2s;
+}
+
+.model-tile:hover { border-color: var(--border-mid); }
+
+.model-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.model-result {
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.4;
+    min-height: 32px;
+    margin-bottom: 10px;
+}
+
+.model-pct {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 18px;
+    color: var(--green-mid);
+}
+
+/* Топ-3 кандидати */
+.top-candidates {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 20px;
+}
+
+.cand-row {
+    display: grid;
+    grid-template-columns: 26px 1fr 56px;
+    grid-template-rows: auto 4px;
+    align-items: center;
+    column-gap: 12px;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.cand-row:hover { border-color: var(--border-mid); background: #0f1711; }
+.cand-row:first-child { border-color: rgba(0,255,110,0.2); }
+
+.cand-medal {
+    font-size: 16px;
+    text-align: center;
+    grid-row: 1; grid-column: 1;
+}
+
+.cand-name {
+    font-size: 13px;
+    color: var(--text);
+    grid-row: 1; grid-column: 2;
+    line-height: 1.35;
+}
+
+.cand-pct {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    color: var(--green-mid);
+    text-align: right;
+    grid-row: 1; grid-column: 3;
+}
+
+.cand-track {
+    grid-row: 2; grid-column: 2 / 4;
+    background: rgba(255,255,255,0.05);
+    border-radius: 2px;
+    height: 3px;
+    overflow: hidden;
+    margin-top: 6px;
+}
+
+.cand-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green-dark), var(--neon));
+    border-radius: 2px;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    min-width: 3px;
+}
+
+/* Поради водію */
+.rec-box {
+    background: var(--input-bg);
+    border-left: 2px solid var(--green-mid);
+    border-radius: 0 8px 8px 0;
+    border-top: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 18px;
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--text-soft);
+    line-height: 1.65;
+}
+
+.rec-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    color: var(--green-mid);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 18px 0;
+}
+
+.next-wrap { text-align: center; }
+.hidden { display: none; }
+
+/* Мобільні версі */
+@media (max-width: 580px) {
+    .card { padding: 22px 18px; }
+    .models-grid { grid-template-columns: 1fr; }
+    .result-sign-name { font-size: 17px; }
+    h1 { font-size: 26px; }
+    .conf-number { font-size: 22px; }
+}
+
+/* Подвал */
+.site-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 32px;
+    padding: 0 8px;
+}
+
+.footer-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-mid), transparent);
+}
+
+.footer-text {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.footer-text strong {
+    color: var(--neon);
+    text-shadow: 0 0 10px rgba(0,255,110,0.3);
+}
+
+@media (max-width: 480px) {
+}
+
+/* Кнопки */
+.test-button-wrap {
+    margin-top: 14px;
+    display: flex;
+    justify-content: center;
+}
